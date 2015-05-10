@@ -38,7 +38,7 @@ add list=SUBNET-SERVERNET address=10.10.10.0/24 comment=IPAM
 
 ### Global Variables
 
-All installation scripts can be found in [ros/]. Each script takes care of installing a certain address list. Since all scripts are based on global variables declared within the `00-SetGlobalVarsAddressLists` script file this one has to modified and uploaded to the target router prior to any other script.
+All installation scripts can be found in [ros](ros/). Each script takes care of installing a certain address list. Since all scripts are based on global variables declared within the `00-SetGlobalVarsAddressLists` script file this one has to modified and uploaded to the target router prior to any other script.
 
 The following global variables are declared within 00-SetGlobalVarsAddressLists.rsc:
 
@@ -102,9 +102,9 @@ $ ssh admin@192.168.88.1
 
 ## Building your own Central Repository (with IPAM support)
 
-Within the [src/] folder you find all the tools required to set up your own central address list repository based on CentOS 7 running httpd.
+Within the [src](src/) folder you find all the tools required to set up your own central address list repository based on CentOS 7 running httpd.
 
-The resulting address lists can be used together with the RouterOS scripts found in [ros/].
+The resulting address lists can be used together with the RouterOS scripts found in [ros](ros/).
 
 FIXME - This section requires a little more background.
 
