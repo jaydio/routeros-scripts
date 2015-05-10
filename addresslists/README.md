@@ -29,8 +29,8 @@ The following conditions apply when using the scripts located in [ros/](ros/):
    * If present, remove all pre-existing entries identified by address list specific comment (e.g. "IPAM", "OpenBL" or "DShield")
    * Once removed, attempt to import the address list file from the local file system
    * If the import succeeds, and only then, purge the address list file from the local file system
-   * If the address list file is missing for whatever reason, the replace script exit with a warning
-   * If the address is smaller than 1KB (Kilobyte) it will not be used
+   * If the address list file is missing for whatever reason, the replace script exits with a warning without removing any entries
+   * If the address list file is smaller than 1KB (Kilobyte) it will not be used
  * The fetch script has no way to determine if ..
    * .. the list on the remote server contains newer entries than those currently installed
    * .. the address list file contains any errors (e.g. file was truncated on the remote server or during transfer)
