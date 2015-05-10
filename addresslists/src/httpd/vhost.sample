@@ -1,0 +1,53 @@
+<VirtualHost *:80>
+  ServerName lists.example.com
+  ServerAdmin hostmaster@example.com
+  SetEnv SERVER_ADMIN hostmaster@example.com
+  DocumentRoot /var/www/html/lists.example.com
+  ErrorLog /var/log/httpd/lists.example.com.http.error.log
+  TransferLog /var/log/httpd/lists.example.com.http.access.log
+
+  <IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteRule .* https://lists.example.com%{REQUEST_URI} [R,L]
+  </IfModule>
+</VirtualHost>
+
+<VirtualHost _default_:443>
+  ServerName lists.example.com
+  ServerAdmin hostmaster@example.com
+  SetEnv SERVER_ADMIN hostmaster@example.com
+  DocumentRoot /var/www/html/lists.example.com
+  ErrorLog /var/log/httpd/lists.example.com.https.error.log
+  TransferLog /var/log/httpd/lists.example.com.https.access.log
+  CustomLog /var/log/httpd/lists.example.com.sslcon.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+  <Directory "/var/www/html/lists.example.com">
+    IndexOptions FancyIndexing -DescriptionWidth VersionSort FoldersFirst
+    AddDescription "RouterOS script" .rsc
+    AddDescription "plain text file" .txt
+    AddDescription "latest status log" update.log
+    AddDescription "log file" .log
+    
+    AllowOverride All
+    Order allow,deny
+    allow from all
+  </Directory>
+
+#  <Location />
+#  AuthName "Auth"
+#  AuthUserFile /etc/httpd/addresslists.htpasswd
+#  AuthType Basic
+#  Require valid-user
+#  Order Allow,Deny
+#  Allow from all
+#  </Location>
+
+  SSLEngine On
+  SSLProtocol all -SSLv2 -SSLv3
+  SSLHonorCipherOrder On
+  SSLCipherSuite "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH EDH+aRSA !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !RC4"
+  SSLCertificateFile /etc/ssl/private/httpd/wildcard.example.com.crt
+  SSLCertificateKeyFile /etc/ssl/private/httpd/wildcard.example.com.key
+  SSLCACertificateFile /etc/ssl/cacerts/startcom/ca-bundle.pem
+</VirtualHost>
