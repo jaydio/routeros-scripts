@@ -7,10 +7,10 @@
 
 :if (:typeof[$AddressListsWebRemoteUser] = "nil") do={
     # If no username was defined assume that authentication isn't required
-    /tool fetch url="https://$AddressListsWebRemoteHost/dshield.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteHost/tornodes.rsc" mode=https;
     } else={
     # If a username was set assume authentication is mandatory and also use a password
-    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/dshield.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/tornodes.rsc" mode=https;
 }
 
 }
