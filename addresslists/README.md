@@ -68,11 +68,9 @@ $ scp 00-SetGlobalVarsAddressLists.rsc admin@192.168.88.1:
 $ ssh admin@192.168.88.1 "import 00-SetGlobalVarsAddressLists.rsc"
 ```
 
-There's no need for a reboot - the variables will be available right away. Additionally a scheduler entry is installed to ensure that such varaibles are being declared upon startup.
+There's no need for a reboot - the variables will be available right away. Additionally a scheduler entry is installed to ensure that such variables are being declared during boot time. Now, depending on what address lists you'd like to install, select the respective installation script and upload it to the target router.
 
-Depending on what address lists you'd like to install you can now chose the respective scripts and upload it to the target router.
-
-Lets try to install the dshield list - with 20 entires it is fairly small and should fit onto any routerboard w/o eating much resources:
+In the following example we'll try to install the dshield blacklist. Unlike other lists which might contain thousands of entires, the dshield list with 20 entries is fairly small and easily fits onto any routerboard w/o eating to much resources:
 
 ```
 $ scp 04-installBlacklistDshield.rsc admin@192.168.88.1:
@@ -80,7 +78,9 @@ $ ssh admin@192.168.88.1 "import 04-installBlacklistDshield.rsc"
 [...]
 ```
 
-That's it! Together with each installation script there are system scripts and scheduler entries installed to ensure frequent updates (defaults to once a day between 1 and 2am).
+That's it!
+
+**Note:** Each installation script installs two system scripts, one for fetching the list from a remote web server and another one for replacing existing entries once a new version is available. It also installs two scheduler entries to call both scripts sequentially including a slight offset. By default the list file is being fetched and implemented once a day between 1 and 2am.
 
 ```
 $ ssh admin@192.168.88.1 "/system script print brief; /system scheduler print brief"
