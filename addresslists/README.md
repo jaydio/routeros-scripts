@@ -20,6 +20,10 @@ Address lists in RouterOS support the following entry types:
 
 See [Manual:IP/Firewall/Address list](http://wiki.mikrotik.com/wiki/Manual:IP/Firewall/Address_list) for further details.
 
+## Words of Warning
+
+Everyone should be clear that this whole centralized approach is fairly fragile and all script provided at this point come without any warranty what so ever. You have been warned, use them with caution! These scripts are currently used in production and haven't caused any trouble so far. However, it should be noted that almost all our routers are located in walking distance. It is advised to take pre-measures e.g. hard code those firewall rules responsible for allowing administrative access. This way you can at least ensure that the router's managemenet address stays reachable.
+
 ## Conditions
 
 The following conditions apply when using the scripts located in [ros/](ros/):
@@ -35,9 +39,6 @@ The following conditions apply when using the scripts located in [ros/](ros/):
    * .. the list on the remote server contains newer entries than those currently installed
    * .. the address list file contains any errors (e.g. file was truncated on the remote server or during transfer)
  * Fetching a broken address list file WILL cause trouble
- * When an address list was fetched successfully 
-
-Everyone should be clear about the fact that this whole setup is fairly fragile and should be used with caution. The scripts mentioned at this point are currently being used in production and so far haven't caused any severe outages. However, it should be noted that almost all our routers are located in walking distance. It is advised to take pre-measures e.g. hard code those firewall rules responsible for allowing administrative access. This way you can at least ensure that the router's managemenet address stays reachable.
 
 ## Address Mappings
 
