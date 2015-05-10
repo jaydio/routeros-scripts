@@ -2,7 +2,7 @@
 
 #### FUNCTIONS
 
-source ./gen-ros-include.sh
+source /usr/local/sbin/gen-ros-include.sh
 
 ##### SCRIPT BODY
 
