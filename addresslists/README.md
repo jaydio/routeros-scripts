@@ -22,7 +22,9 @@ See [Manual:IP/Firewall/Address list](http://wiki.mikrotik.com/wiki/Manual:IP/Fi
 
 ## Words of Warning
 
-Everyone should be clear that this whole centralized approach is fairly fragile and all script provided at this point come without any warranty what so ever. You have been warned, use them with caution! These scripts are currently used in production and haven't caused any trouble so far. However, it should be noted that almost all our routers are located in walking distance. It is advised to take pre-measures e.g. hard code those firewall rules responsible for allowing administrative access. This way you can at least ensure that the router's managemenet address stays reachable.
+Everyone should be clear on the fact that the approach documented at this point is fairly fragile. All scripts are provided as-is and come without a warranty to be fit for any particular purpose. Use them with caution, you have been warned!
+
+These scripts are currently used in production at our university and haven't caused any trouble so far. However, it's fair to note that almost all our routers are located in walking distance which would minimize the restore time. I recommend to take pre-measures such as disconnecting all firewall rules responsible for allowing administrative access from any address lists. This way you can at least ensure that the router's managemenet address stays reachable at all times.
 
 ## Conditions
 
