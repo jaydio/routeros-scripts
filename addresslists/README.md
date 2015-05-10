@@ -20,6 +20,25 @@ Address lists in RouterOS support the following entry types:
 
 See [Manual:IP/Firewall/Address list](http://wiki.mikrotik.com/wiki/Manual:IP/Firewall/Address_list) for further details.
 
+## Conditionals
+
+The following conditions apply when using the scripts located in [ros/](ros/):
+
+ * Installing a new address list involves the following steps
+   * Check if the address list file is present on the router's file system
+   * If present, remove all pre-existing entries identified by address list specific comment (e.g. "IPAM", "OpenBL" or "DShield")
+   * Once removed, attempt to import the address list file from the local file system
+   * If the import succeeds, and only then, purge the address list file from the local file system
+   * If the address list file is missing for whatever reason, the replace script exit with a warning
+   * If the address is smaller than 1KB (Kilobyte) it will not be used
+ * The fetch script has no way to determine if ..
+   * .. the list on the remote server contains newer entries than those currently installed
+   * .. the address list file contains any errors (e.g. file was truncated on the remote server or during transfer)
+ * Fetching a broken address list file WILL cause trouble
+ * When an address list was fetched successfully 
+
+Everyone should be clear about the fact that this whole setup is fairly fragile and should be used with caution. The scripts mentioned at this point are currently being used in production and so far haven't caused any severe outages. However, it should be noted that almost all our routers are located in walking distance. It is advised to take pre-measures e.g. hard code those firewall rules responsible for allowing administrative access. This way you can at least ensure that the router's managemenet address stays reachable.
+
 ## Address Mappings
 
 Considering an export from IPAM - netblocks can be mapped using a range of ip addresses, subnets using the more common CIDR notation and hosts by using their respective ip address(es). If a host is configured with more than one ip address within the same network, the interface name or subnet name can be appended to the respective list name.
@@ -38,7 +57,7 @@ add list=SUBNET-SERVERNET address=10.10.10.0/24 comment=IPAM
 
 ### Global Variables
 
-All installation scripts can be found in [ros](ros/). Each script takes care of installing a certain address list. Since all scripts are based on global variables declared within the `00-SetGlobalVarsAddressLists` script file this one has to modified and uploaded to the target router prior to any other script.
+All installation scripts can be found in [ros/](ros/). Each script takes care of installing a certain address list. Since all scripts are based on global variables declared within the `00-SetGlobalVarsAddressLists` script file this one has to modified and uploaded to the target router prior to any other script.
 
 The following global variables are declared within 00-SetGlobalVarsAddressLists.rsc:
 
@@ -98,13 +117,10 @@ $ ssh admin@192.168.88.1
 [admin@MikroTik] > ip firewall filter add chain=forward place-before=0 src-address-list=blacklist in-interface=all-ppp action=drop comment="block traffic from malicious networks"
 ```
 
-**Important:** Both rules are installed on top their respective chains - input and forward. That is before any stateful related rules can grab already established connections. Meaning, inserting the two as stated above WILL also break outbound connectivity to any ip address on the blacklist. That is for traffic originated from your router itself (input/output) as well as from any other network that's routed through it (forward). So if you need the ability to connect to any of the blacklisted addresses, the above mentioned rules have to be placed BELOW the stateful rules that accepts established connections (!)
+**Important:** Both rules are installed on top of their respective chains - input and forward. That's before any stateful rule could grab return traffic for already established connections. Meaning, inserting the two rules above WILL break outbound connectivity to any of the ip addresses as part of the `blacklist`. That is for traffic originated from your router (input/output) as well as from any other network that's routed through it (forward). So if you need the ability to connect to any of the blacklisted addresses, the above mentioned rules have to be placed BELOW the stateful rules that's responsible for accepting already established connections (!)
 
-## Building your own Central Repository (with IPAM support)
+## Building your own Central Address List Repository
 
-Within the [src](src/) folder you find all the tools required to set up your own central address list repository based on CentOS 7 running httpd.
+Within the [src/](src/) folder you find all the tools required to set up your own central address list repository based on CentOS 7 running httpd.
 
-The resulting address lists can be used together with the RouterOS scripts found in [ros](ros/).
-
-FIXME - This section requires a little more background.
-
+The resulting address lists can be used together with the RouterOS scripts found in [ros/](ros/).
