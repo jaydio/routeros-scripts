@@ -20,7 +20,7 @@ Address lists in RouterOS support the following entry types:
 
 See [Manual:IP/Firewall/Address list](http://wiki.mikrotik.com/wiki/Manual:IP/Firewall/Address_list) for further details.
 
-## Conditionals
+## Conditions
 
 The following conditions apply when using the scripts located in [ros/](ros/):
 
