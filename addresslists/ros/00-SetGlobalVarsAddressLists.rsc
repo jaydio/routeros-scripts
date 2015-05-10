@@ -1,8 +1,8 @@
 # Create script for setting up global variables
 /system script add name="SetGlobalVarsAddressLists" source={
-:global AddressListsWebRemoteHost "<AddressListsWebRemoteHost>"
-:global AddressListsWebRemoteUser "<AddressListsWebRemoteUser>"
-:global AddressListsWebRemotePassword "<AddressListsWebRemotePassword>"
+:global AddressListsWebRemoteHost "lists.mikrotik.help"
+:global AddressListsWebRemoteUser ""
+:global AddressListsWebRemotePassword ""
 }
 
 # Create scheduler to execute script at boot time
@@ -12,6 +12,10 @@
 /system script run SetGlobalVarsAddressLists
 
 # Print out variables on the CLI for verification
+:global AddressListsWebRemoteHost
+:global AddressListsWebRemoteUser
+:global AddressListsWebRemotePassword
+
 :put "The following global variables are now available:"
 :put "---------------------------------------------------"
 :put "AddressListsWebRemoteHost -> $AddressListsWebRemoteHost"

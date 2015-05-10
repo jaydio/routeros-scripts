@@ -34,7 +34,7 @@ add list=NETBLOCK-BRANCH2 address=10.250.10.0-10.250.20.255 comment=IPAM
 add list=SUBNET-SERVERNET address=10.10.10.0/24 comment=IPAM
 ```
 
-## Installation
+## Installation Scripts
 
 ### Global Variables
 
@@ -46,10 +46,11 @@ The following global variables are declared within 00-SetGlobalVarsAddressLists.
  * AddressListsWebRemoteUser
  * AddressListsWebRemotePassword
 
-If access to the remote web server is not password protected you can declare
+Usually it is advisable to install password protection (basic authentication) on the web server serving the address lists. Especially when address lists are generated using sensitive information from IPAM. However, when using a public service such as [lists.mikrotik.help](https://lists.mikrotik.help) access is usually not password protected. In case authentication is not required, make sure to set an empty values for the variable `AddressListsWebRemoteUser`.
 
+### Installation Workflow
 
-Workflow for installing blacklists
+The following workflow gets you started using my public blacklist service hosted via [lists.mikrotik.help](http://lists.mikrotik.help/). The provided address lists are being updated hourly.
 
 ```
 $ cd Desktop/
@@ -58,10 +59,46 @@ $ cd routeros-scripts/addresslists/ros
 $ sed -i -e "s,<AddressListsWebRemoteHost>,lists.mikrotik.help,g" 00-SetGlobalVarsAddressLists.rsc
 $ sed -i -e "s,<AddressListsWebRemoteUser>,,g" 00-SetGlobalVarsAddressLists.rsc
 $ sed -i -e "s,<AddressListsWebRemotePassword>,,g" 00-SetGlobalVarsAddressLists.rsc
-
 ```
 
-The installation scripts include required definitions for system scripts as well as respective scheduler entries.
+First, upload the `00-SetGlobalVarsAddressLists` script to the router and execute it:
+
+```
+$ scp 00-SetGlobalVarsAddressLists.rsc admin@192.168.88.1:
+$ ssh admin@192.168.88.1 "import 00-SetGlobalVarsAddressLists.rsc"
+```
+
+There's no need for a reboot - the variables will be available right away. Additionally a scheduler entry is installed to ensure that such varaibles are being declared upon startup.
+
+Depending on what address lists you'd like to install you can now chose the respective scripts and upload it to the target router.
+
+Lets try to install the dshield list - with 20 entires it is fairly small and should fit onto any routerboard w/o eating much resources:
+
+```
+$ scp 04-installBlacklistDshield.rsc admin@192.168.88.1:
+$ ssh admin@192.168.88.1 "import 04-installBlacklistDshield.rsc"
+[...]
+```
+
+That's it! Together with each installation script there are system scripts and scheduler entries installed to ensure frequent updates (defaults to once a day between 1 and 2am).
+
+```
+$ ssh admin@192.168.88.1 "/system script print brief; /system scheduler print brief"
+```
+
+### Firewall: Drop Malicious Traffic using Blacklists
+
+All lists that contain a `Blacklist` within the file name are added to the default address list named `blacklist`. Lets assume your router is connected to the internet through DSL and the modem is connected to ether1. Once the link is established internet traffic is routed through a pseudo interface usually called pppoe0. In the following example we'll use `all-ppp` as the in-interface. Meaning, the following will work with any router that's connected through a dial up connection.
+
+The following two firewall rules will silently discard any inbound or forwarding traffic originated from any ip address as part of the blacklist address list.
+
+```
+$ ssh admin@192.168.88.1
+[admin@MikroTik] > ip firewall filter add chain=input place-before=0 src-address-list=blacklist in-interface=all-ppp action=drop comment="block traffic from malicious networks"
+[admin@MikroTik] > ip firewall filter add chain=forward place-before=0 src-address-list=blacklist in-interface=all-ppp action=drop comment="block traffic from malicious networks"
+```
+
+**Important:** These rules are placed on top of each chain, before any stateful related rules. Meaning, establishing connections to those ip addresses from the private network behind the router won't be possible any more. If you need to connect to any of these ip addresses place the above mentioned rules below the stateful rule that accepts established connections (!)
 
 ## Building your own Central Repository (with IPAM support)
 
@@ -69,5 +106,5 @@ Within the [src/] folder you find all the tools required to set up your own cent
 
 The resulting address lists can be used together with the RouterOS scripts found in [ros/].
 
-FIXME
+FIXME - This section requires a little more background.
 
