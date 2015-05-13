@@ -19,9 +19,8 @@ fi
 }
 
 function insertAuthorDetails() {
-echo "# Automated address list generation for RouterOS" >> ${DEST_DIR}/${LISTNAME}.rsc;
-echo "# A public service provided for by Jan Dennis Bungart" >> ${DEST_DIR}/${LISTNAME}.rsc;
-echo "# Contact: me@jayd.io (0x941F1883), xmpp/email" >> ${DEST_DIR}/${LISTNAME}.rsc;
+echo "# Automatically genereted address list for RouterOS" >> ${DEST_DIR}/${LISTNAME}.rsc;
+echo "# Powered by: John Doe / john@doe.com" >> ${DEST_DIR}/${LISTNAME}.rsc;
 echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
 }
 

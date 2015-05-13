@@ -16,7 +16,7 @@
 :global AddressListsWebRemoteUser
 :global AddressListsWebRemotePassword
 
-:put "The following global variables are now available:"
+:put "The following global variables have been configured:"
 :put "---------------------------------------------------"
 :put "AddressListsWebRemoteHost -> $AddressListsWebRemoteHost"
 :put "AddressListsWebRemoteUser -> $AddressListsWebRemoteUser"
