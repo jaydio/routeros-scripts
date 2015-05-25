@@ -107,7 +107,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=bogons-v4";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -124,13 +124,16 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# Address details courtesy of http://www.team-cymru.org" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# (c) Team Cymru Research NFP - making the Internet more secure" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# This is the list of bit notation bogons, unaggregated." >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# Updated as IANA allocations and special prefix reservations" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# are made." >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# Fullbogons are a larger set which also includes IP space" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# that has been allocated to an RIR, but not assigned by that RIR" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# to an actual ISP or other end-user. IANA maintains a convenient" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# IPv4 summary page listing allocated and reserved netblocks," >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# and each RIR maintains a list of all prefixes that they have" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# assigned to end-users." >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=bogons-v4-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -147,13 +150,16 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# Address details courtesy of http://www.team-cymru.org" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# (c) Team Cymru Research NFP - making the Internet more secure" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# This is the list of bit notation bogons, unaggregated." >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# Updated as IANA allocations and special prefix reservations" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# are made." >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# Fullbogons are a larger set which also includes IP space" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# that has been allocated to an RIR, but not assigned by that RIR" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# to an actual ISP or other end-user. IANA maintains a convenient" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# IPv4 summary page listing allocated and reserved netblocks," >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# and each RIR maintains a list of all prefixes that they have" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# assigned to end-users." >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=bogons-v6-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -182,7 +188,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk '{ print "add list=tornodes address=" $1 " comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk '{ print "add list=tornodes address=" $1 " comment=zeus-badips";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
