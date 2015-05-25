@@ -42,7 +42,7 @@ echo "$(date -u) $(basename $0); $1" | tee -a ${LOGFILE} ${WEBLOGFILE};
 }
 
 function suspendAccess() {
-cat <<'HERE' > ${DST_DIR}/.htaccess
+cat <<'HERE' > ${DEST_DIR}/.htaccess
 ErrorDocument 403 'One or more address lists in this folder are currently being <b>updated</b>! <br/><br/>In order to prevent your network gear from fetching an empty or inconsistent address list<br/> we have temporarily disabled access. The service will resume once all lists were generated. <br/>Please try again in a short while. Consider <b>contacting</b> the local <b>hostmaster</b> <br/>in case this <b>message</b> keeps on <b>showing for at least 5 more minutes</b>.'
 
 <IfModule mod_authz_core.c>
@@ -58,7 +58,7 @@ HERE
 }
 
 function restoreAccess() {
-rm -f > ${DST_DIR}/.htaccess
+rm -f > ${DEST_DIR}/.htaccess
 }
 
 function scriptStart() {
