@@ -41,11 +41,33 @@ function scriptLog() {
 echo "$(date -u) $(basename $0); $1" | tee -a ${LOGFILE} ${WEBLOGFILE};
 }
 
+function disableAccess() {
+cat <<'HERE' > ${DST_DIR}/.htaccess
+ErrorDocument 403 'One or more address lists in this folder are currently being <b>updated</b>! <br/><br/>In order to prevent your network gear from fetching an empty or inconsistent address list<br/> we have temporarily disabled access. The service will resume once all lists were generated. <br/>Please try again in a short while. Consider <b>contacting</b> the local <b>hostmaster</b> <br/>in case this <b>message</b> keeps on <b>showing for at least 5 more minutes</b>.'
+
+<IfModule mod_authz_core.c>
+    # Apache 2.4 >
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    # Apache 2.2
+    Order allow,deny
+    Deny from all
+</IfModule>
+HERE
+}
+
+function restoreAccess() {
+rm -f > ${DST_DIR}/.htaccess
+}
+
 function scriptStart() {
 scriptLog "Removing weblog of previous run.."
 rm ${WEBLOGFILE}
 scriptLog "---- $(date -u) - $(basename $0) ----"
 scriptLog "Address lists are now being generated;"
+disableAccess
+scriptLog "Disabling repository access"
 
 if [ -f ${LOCKFILE} ]; then
     scriptLog "Lock file detected - aborting!"
@@ -63,6 +85,9 @@ scriptLog "Automated removal of lock file"
 
 scriptLog "Placing timestamp"
 echo -e "Last synchronization: \n\n$(date) \n$(date -u)" > ${LASTSYNCFILE}
+
+restoreAccess
+scriptLog "Restoring repository access"
 
 scriptLog "---- $(date -u) - $(basename $0) ----"
 }
