@@ -32,8 +32,8 @@
 
 			# Identify all pre-existing entries and remove them
    	        :foreach entry in=[/ip firewall address-list find] do={
-    	    :if ( [/ip firewall address-list get $entry comment] = "$listComment" ) do={
-    	        /ip firewall address-list remove $entry;
+    	    :if ( [/ipv6 firewall address-list get $entry comment] = "$listComment" ) do={
+    	        /ipv6 firewall address-list remove $entry;
     	        }
     	    }
 
