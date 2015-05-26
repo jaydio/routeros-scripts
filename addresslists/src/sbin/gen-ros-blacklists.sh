@@ -209,7 +209,8 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=tornodes address=" $1 " comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc    else
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=tornodes address=" $1 " comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+  else
       errNotify
   fi;
 
