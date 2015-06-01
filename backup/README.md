@@ -32,7 +32,6 @@ Even though there's no guaranteee the script should work fine on other platforms
 $ tree
 .
 ├── MikroTik-192.168.200.1-ros6.29-tile
-│   ├── MikroTik-192.168.200.1-ros6.29-tile-0602150123.INFO.txt
 │   ├── MikroTik-192.168.200.1-ros6.29-tile-0602150124.backup
 │   ├── MikroTik-192.168.200.1-ros6.29-tile-0602150124.INFO.txt
 │   └── MikroTik-192.168.200.1-ros6.29-tile-0602150124.rsc
