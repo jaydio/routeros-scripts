@@ -1,4 +1,4 @@
-# rosbackup.sh - A simple shell script to back up your ROS platforms!
+# rosbackup.sh - A simple way to back up your RouterOS
 
 This script provides very basic functionality in order to back up multiple routers remotely using SSH.
 
@@ -68,9 +68,9 @@ As you can see above the pair consists of two keys;
 Upload the ssh public key from the server to the router and assign it to a backup user
 
 ```
-server ~$ scp .ssh/id\_dsa\_rosbackup.pub admin@<routeripaddress>:
+server ~$ scp .ssh/id_dsa_rosbackup.pub admin@<routeripaddress>:
 [admin@MikroTik] > user add name=backup group=full
-[admin@MikroTik] > user ssh-keys import public-key-file=id\_dsa\_rosbackup.pub user=backup
+[admin@MikroTik] > user ssh-keys import public-key-file=id_dsa_rosbackup.pub user=backup
 ```
 
 Repeat the following steps for every router you'd like to back up using this script.
@@ -89,10 +89,10 @@ server ~$ chmod 700 /usr/local/sbin/rosbackup.sh
 ```
 Now open the script `/usr/local/sbin/rosbackup.sh` and change the following variables/parameters:
 
- * SSHUSER - The username to use when connecting to routers (same for all routers)
- * SSHARGS - Arguments passed to the `ssh` command when connecting to routers. By default it expects the private key within the `~/.ssh` - the tilde resolves to the home folder of the user you've used to login. With root the path would look like this -> `/root/.ssh`
- * BACKUPPATH\_PARENT - The parent path under which to store backups. Within this path the script will create a directory per router based on the name, ip address, ros version and architecture. Defaults to the curren working directory.
- * ROUTERS - An array of ip addresses of all target routers that the script should back up. There's no limit on how many routers you can add.
+ * **SSHUSER** - The username to use when connecting to routers (same for all routers)
+ * **SSHARGS** - Arguments passed to the `ssh` command when connecting to routers. By default it expects the private key within the `~/.ssh` - the tilde resolves to the home folder of the user you've used to login. With root the path would look like this -> `/root/.ssh`
+ * **BACKUPPATH_PARENT** - The parent path under which to store backups. Within this path the script will create a directory per router based on the name, ip address, ros version and architecture. Defaults to the curren working directory.
+ * **ROUTERS** - An array of ip addresses of all target routers that the script should back up. There's no limit on how many routers you can add.
 
 Having one router configured now do a dry run by calling the script using its full path to make sure everything works.
 
