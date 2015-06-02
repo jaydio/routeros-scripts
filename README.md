@@ -1,4 +1,4 @@
-# Scripts and Snippets for MikroTik RouterOS
+# MikroTik RouterOS: Collection of Scripts & Best Practices
 
 This repository holds a collection of scripts meant to make your life easier when deploying and maintaining RouterOS. It is based on best practices of network engineers, system integrators as well as members of the community reachable through the [MikroTik Forum](http://forum.mikrotik.com). 
 
