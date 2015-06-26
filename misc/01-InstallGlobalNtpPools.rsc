@@ -18,10 +18,13 @@
 ## This script is partially based on examples found here:
 ## http://wiki.mikrotik.com/wiki/Manual:Scripting-examples#Allow_use_of_ntp.org_pool_service_for_ntp
 
-# Set primary and secondary pool of ntp servers to use
+# Set primary and secondary ntp servers to be fetched from
+# pool.ntp.org. This automatically ensures that ntp servers
+# are installed that are located within the geographical region
+# of the router
 /system script add name="SetGlobalNtpServers" source={
-:global SystemNtpPrimary "0.asia.pool.ntp.org";
-:global SystemNtpSecondary "1.asia.pool.ntp.org";
+:global SystemNtpPrimary "0.pool.ntp.org";
+:global SystemNtpSecondary "1.pool.ntp.org";
 }
 
 # Create scheduler to execute script at boot time
