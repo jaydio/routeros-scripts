@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # rosbackup.sh - simple back up of multiple RouterOS instances via SSH
 # Copyright (C) 2015 - Jan Dennis Bungart <me@jayd.io>
@@ -18,10 +18,16 @@
 ###
 
 # export user to use when establishing ssh connections
-export SSHUSER="backup"
+export SSHUSER="admin"
 
 # define connection parameters such as the path to a private key
-export SSHARGS="-i ~/.ssh/id_dsa_rosbackup"
+export SSHARGS="-i ~/.ssh/id_dsa_rosbackup \
+                -F /dev/null \
+                -oConnectTimeout=10 \
+                -oBatchMode=yes \
+                -oControlMaster=auto \
+                -oControlPersist=1h \
+                -oControlPath=~/.ssh/ssh-%r-%h-%p"
 
 # define the parent path for backups (defaults to user's home directory)
 # hint: omit the trailing slash
@@ -32,6 +38,10 @@ export BACKUPPATH_PARENT="."
 ROUTERS=()
 ROUTERS+=("192.168.200.1");
 #ROUTERS+=("192.168.200.2");
+#ROUTERS+=("192.168.200.3");
+
+# or a range of addresses
+#ROUTERS+=($(seq -f "192.168.200.%g" 1 255));
 
 # functions
 function sanitizeRosOutput() {
@@ -42,6 +52,10 @@ awk 'NR>1{$1=$1}{ print $2 }' | sed 's/\r$//'
 # iteration
 for ROUTERADDRESS in ${ROUTERS[@]}; do
 
+    # check if we can authenticate with the remote host trying to execute a command, if not continue with next host
+    echo "Trying ${ROUTERADDRESS} ... "
+    ssh -q ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" > /dev/null || continue
+    
 	# generate an individual timestamp per router
 	TIMESTAMP="$(date +%m%d%y%H%M)";
 
