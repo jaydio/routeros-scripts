@@ -23,8 +23,19 @@ The script was tested successfully on the following linux distributions:
  * CentOS 7
  * Fedora 21
  * Fedora 22
+ * Fedora 23
 
 Even though there's no guaranteee the script should work fine on other platforms as well including Debian and its derivates such as Ubuntu.
+
+## OpenSSH 7.0 disables DSA keys by default
+
+OpenSSH 7.0 and greater similarly disables the ssh-dss (DSA) public key algorithm. It too is weak and the maintainers do recommend against its use.
+
+However, these may be re-enabled using the instructions at http://www.openssh.com/legacy.html.
+
+Please consider using RSA keys instead as described using the procedures described below.
+
+Source: http://www.openssh.com/txt/release-7.0
 
 ## Backup Directory Layout
 
@@ -46,12 +57,12 @@ First log in to your linux server using the user account you'd like to store you
 
 ```
 server ~$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
-server ~$ ssh-keygen -t DSA -b 1024 -C "rosbackup" -f .ssh/id_dsa_rosbackup
-Generating public/private DSA key pair.
+server ~$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
+Generating public/private RSA key pair.
 Enter passphrase (empty for no passphrase): <PRESS ENTER>
 Enter same passphrase again: <PRESS ENTER>
-Your identification has been saved in .ssh/id_dsa_rosbackup.
-Your public key has been saved in .ssh/id_dsa_rosbackup.pub.
+Your identification has been saved in .ssh/id_rsa_rosbackup.
+Your public key has been saved in .ssh/id_rsa_rosbackup.pub.
 ```
 When being prompted for a passphrase hit return to use an empty passphrase. This way the private key can be used by the backup script without the need for entering a passphrase or using an ssh agent.
 
@@ -67,9 +78,9 @@ As you can see above the pair consists of two keys;
 Upload the ssh public key from the server to the router and assign it to a backup user
 
 ```
-server ~$ scp .ssh/id_dsa_rosbackup.pub admin@<routeripaddress>:
+server ~$ scp .ssh/id_rsa_rosbackup.pub admin@<routeripaddress>:
 [admin@MikroTik] > user add name=backup group=full
-[admin@MikroTik] > user ssh-keys import public-key-file=id_dsa_rosbackup.pub user=backup
+[admin@MikroTik] > user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup
 ```
 
 Repeat the following steps for every router you'd like to back up using this script.

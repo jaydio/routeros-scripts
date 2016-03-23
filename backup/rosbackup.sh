@@ -21,18 +21,23 @@
 export SSHUSER="admin"
 
 # define connection parameters such as the path to a private key
-export SSHARGS="-i ~/.ssh/id_dsa_rosbackup \
+export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
                 -F /dev/null \
                 -oConnectTimeout=10 \
                 -oBatchMode=yes \
                 -oControlMaster=auto \
                 -oControlPersist=1h \
+                -oControlPath=~/.ssh/ssh-rosbackup-%r-%h-%p                     
+                -oPubkeyAcceptedKeyTypes=+ssh-dss
                 -oControlPath=~/.ssh/ssh-%r-%h-%p"
 
 # define the parent path for backups (defaults to user's home directory)
 # hint: omit the trailing slash
 #export BACKUPPATH_PARENT="/mnt/backups/ros"
 export BACKUPPATH_PARENT="."
+
+# Specify the password used for restoring backup files (.backup)                
+BACKUPPASSWORD="FIXMEFOOBAR"
 
 # an array of router ip addresses, extend as needed
 ROUTERS=()
@@ -87,7 +92,7 @@ for ROUTERADDRESS in ${ROUTERS[@]}; do
 
 	# create a binary backup that can be used for immediate restore.
 	# restore only works on a similar rb model e.g. with the same architecture
-	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system backup save name=\"${BACKUPNAME}\"";
+	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system backup save name=\"${BACKUPNAME}\" password=\"${BACKUPPASSWORD}\"";
 	scp ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS}:${BACKUPNAME}.backup ${BACKUPPATH}/;
 	# give the flashrom a few seconds to breath
 	sleep 5;
