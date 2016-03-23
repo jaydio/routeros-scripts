@@ -103,6 +103,7 @@ Now open the script `/usr/local/sbin/rosbackup.sh` and change the following vari
  * **SSHARGS** - Arguments passed to the `ssh` command when connecting to routers. By default it expects the private key within the `~/.ssh` - the tilde resolves to the home folder of the user you've used to login. With root the path would look like this -> `/root/.ssh`
  * **BACKUPPATH_PARENT** - The parent path under which to store backups. Within this path the script will create a directory per router based on the name, ip address, ros version and architecture. Defaults to the curren working directory.
  * **ROUTERS** - An array of ip addresses of all target routers that the script should back up. There's no limit on how many routers you can add.
+ * **BACKUPPASSWORD** - Specify the password required to restore backup files (.backup)
 
 Having one router configured now do a dry run by calling the script using its full path to make sure everything works.
 
