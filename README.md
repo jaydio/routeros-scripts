@@ -1,16 +1,10 @@
-# MikroTik RouterOS: Collection of Scripts & Best Practices
+# MikroTik RouterOS: Script Repository
 
-This repository contains a collection of scripts related to deploying and maintaining RouterOS based platforms.
-
-It uses best practices of network engineers, system integrators as well as members of the community reachable through the [MikroTik Forum](http://forum.mikrotik.com). 
+This repository contains a collection of scripts related to deploying and maintaining RouterOS platforms. It uses best practices of network engineers, system integrators as well as members of the community reachable through the [MikroTik Forum](http://forum.mikrotik.com).
 
 # Motivation
 
-Most scripts are the result working with RouterOS platforms at [Foundation University](http://foundationu.com) in [Dumaguete City](http://en.wikipedia.org/wiki/Dumaguete).
-
-The university operates a regional ISP on top of an MPLS backbone implemented back in 2014.
-
-As of March 2016 the following routerboard models are used in production:
+Most scripts are the result of our work at [Foundation University](http://foundationu.com) in [Dumaguete City](http://en.wikipedia.org/wiki/Dumaguete). On top of its MPLS backbone the university operates two data centers and a regional ISP. The MPLS backbone was implemented back in 2014 and as of March 2016 the following routerboard models are used in production:
 
  * [CCR1036-8G-2S+EM](http://routerboard.com/CCR1036-8G-2SplusEM)
  * [CCR1036-12G-4S](http://routerboard.com/CCR1036-12G-4S)
@@ -20,7 +14,7 @@ As of March 2016 the following routerboard models are used in production:
  * [RB951Ui-2HnD](http://routerboard.com/RB951Ui-2HnD)
  * [RB951G-2HnD](http://routerboard.com/RB951G-2HnD)
 
-If you're interested to know more about the university's setup:
+In case you're interested to know more about the university's operation:
 
 * [Implementing a Campus Backbone using MikroTik's Cloud Core Series](https://www.youtube.com/watch?v=qWTWpUbavuU).
 
