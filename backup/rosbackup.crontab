@@ -1,0 +1,4 @@
+# execute backup script every six hours
+# place this content into your user's crontab file
+# by executing "crontab -e" ..
+0  */6  *  *  *	~/rosbackup.sh > /dev/null 2>&1

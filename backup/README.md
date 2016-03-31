@@ -1,23 +1,22 @@
-# rosbackup.sh - A simple way to back up your RouterOS
-
-This script provides very basic functionality in order to back up multiple routers remotely using SSH.
+# rosbackup.sh - A simple back up script for RouterOS
 
 Features:
 
- * Uses SSH to connect (supports arguments e.g. for using pubkey authentication)
- * Automatically creates a folder for each router to be backed up
- * a binary as well as a router script export
+ * Utilizes SSH via public key authentication (non-interactive/passwordless)
+ * Automatically creates an encoded backup directory for each router
+ * Stores both; a full export and an architecture specific binary backup
+ * Utilizes SSH session multiplexing for optimized performance
 
 Missing features:
 
  * Implement basic logging functionality
- * Add error handling/reporting e.g. skip iteration if router isn't reachable,providing a detailed error (ping/ssh return code)
- * Add email notifications using board utilities for cross-platform support (sendmail compat)
- * Integrate functionality to remove backups older than a given count of days (use find)
+ * Add error handling/reporting e.g. skip iteration if router isn't reachable, providing a detailed error output
+ * Add cross-platform support for email notifications using linux board utilities (sendmail compat)
+ * Integrate functionality to remove backups older than a given count of days (find)
 
 ## OS Compatibility
 
-The script was tested successfully on the following linux distributions:
+The script was tested successfully on the following distros:
 
  * CentOS 6
  * CentOS 7
@@ -25,27 +24,55 @@ The script was tested successfully on the following linux distributions:
  * Fedora 22
  * Fedora 23
 
-Even though there's no guaranteee the script should work fine on other platforms as well including Debian and its derivates such as Ubuntu.
+The script should work fine on other platforms as well including Debian and its derivates (such as Ubuntu).
 
-## OpenSSH 7.0 disables DSA keys by default
+## OpenSSH release 7.0 disables support for DSS based Host and User Keys by default (August 2015)
 
-OpenSSH 7.0 and greater similarly disables the ssh-dss (DSA) public key algorithm. It too is weak and the maintainers do recommend against its use.
+Starting with OpenSSH 7.0 support for ssh-dss, ssh-dss-cert-* host and user keys is disabled by default at run-time. That means when using this backup script on bleeding edge platforms such as Fedora Linux 23 it won't work out of the box when using DSA keys. In order to avoid compatibility issues consider using only RSA keys.
 
-However, these may be re-enabled using the instructions at http://www.openssh.com/legacy.html.
+**Source:** http://www.openssh.com/txt/release-7.0
 
-Please consider using RSA keys instead as described using the procedures described below.
+## SSH on Steroids: Session Multiplexing
 
-Source: http://www.openssh.com/txt/release-7.0
+This script utilizes SSH session multiplexing to avoid the overhead caused by having to establish a separate SSH session for each command when executing a series of commands on a remote host.
+
+From **SSH_CONFIG (5)** ...
+
+> [...]
+> **ControlMaster**:
+> Enables the sharing of multiple sessions over a single network
+> connection.  When set to “yes”, ssh(1) will listen for connec‐
+> tions on a control socket specified using the ControlPath argu‐
+> ment.  Additional sessions can connect to this socket using the
+> same ControlPath with ControlMaster set to “no” (the default).
+> These sessions will try to reuse the master instance's network
+> connection rather than initiating new ones, but will fall back to
+> connecting normally if the control socket does not exist, or is
+> [...]
+
+For session multiplexing to work no special configuration is required. The default parameters are defined using the ```$SSHARGS``` variable at the beginning of the script.
 
 ## Backup Directory Layout
+
+The script automatically creates a separate backup directory for each router being backed up. 
+
+The following information is encoded within the directory and filenames:
+
+ * Identity of the target router (e.g. ```ROUTERNAME```, ```MikroTik``` etc.)
+ * The ip address used by the script to connect (e.g. ```192.168.200.1```)
+ * The RouterOS version and architecture (e.g. ```ros6.29``` and ```tile```, ```mipsbe``` [...] respectively)
+
+The location where backups are being stored is defined within  ```$BACKUPPATH_PARENT``` at the beginning of the script. It defaults to the current working directory (CWD) which defaults to the same directory where the script was installed. E.g. if the script was installed under ```/home/$USER/rosbackup.sh``` all backups will be stored in the user's home directory under ```/home/$USER```..
+
+Sample directory structure:
 
 ```
 $ tree
 .
-├── MikroTik-192.168.200.1-ros6.29-tile
-│   ├── MikroTik-192.168.200.1-ros6.29-tile-0602150124.backup
-│   ├── MikroTik-192.168.200.1-ros6.29-tile-0602150124.INFO.txt
-│   └── MikroTik-192.168.200.1-ros6.29-tile-0602150124.rsc
+├── ROUTERNAME-192.168.200.1-ros6.29-tile
+│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup
+│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.INFO.txt
+│   └── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc
 └── rosbackup.sh
 ```
 
@@ -53,7 +80,16 @@ $ tree
 
 ### Server: Generating an SSH Keypair
 
-First log in to your linux server using the user account you'd like to store your backups with. Then generate an the ssh keypair necessary for the script to connect to all routers w/o the need to enter a password (non-interactive or public key authentication)
+First you'll have to log in to your linux server.
+
+**Hint:** It's a good idea to create a separate user account under which to run the script and safekeep your backups.
+
+**Hint:** In the following examples the dollar sign ($) indicates that the respective commands are to be executed as a regular user (**not** root). Please don't just copy & paste the commands but type them manually to understand the workflow. However, if you do have to copy & paste make sure **NOT TO** include the dollar sign (!) as it is **NOT** part of the actual command. All actual commands are prefixed with a ```server $ ``` and all further output is considered the actual output of the command itself (!)
+
+Once you've logged in to your user account the next step is to generate an RSA keypair. It will be used by the backup script to log into target routers without the need for a password. This method is also being referred to as **non-interactive** or **public key authentication**.
+
+
+Lets begin by generating the RSA keypair for SSH:
 
 ```
 server ~$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
@@ -64,55 +100,80 @@ Enter same passphrase again: <PRESS ENTER>
 Your identification has been saved in .ssh/id_rsa_rosbackup.
 Your public key has been saved in .ssh/id_rsa_rosbackup.pub.
 ```
-When being prompted for a passphrase hit return to use an empty passphrase. This way the private key can be used by the backup script without the need for entering a passphrase or using an ssh agent.
 
-Following this approach you have to make sure to secure access to the user account and therefore to the private key used to back up your routers (!) Even better - consider using a machine dedicated to the purpose of fetching and storing your backups and do not run services other than ssh.
+When prompted for the passphrase hit enter to use an **empty passphrase**. This way the private key can be used by the backup script without the need for entering a passphrase or configuring an SSH agent.
 
-As you can see above the pair consists of two keys;
+As you seen above the keypair basically consists of two parts:
 
- * Private - has to stay on the linux server at all times (!)
- * Public - to be installed on all target routers for the backup user
+ * ```~/.ssh/id_rsa_rosbackup``` - The private key which should never leave the server/host (!)
+ * ```~/.ssh/id_rsa_rosbackup.pub``` - The public key which is to be installed on all target routers (for the backup user)
+
+**WARNING:** Everyone with root access to your server or general access to the user account used to run the backup script essentially has **full access to all your routers** which are being backed up (!) Keep your ```.ssh``` directory safe and **do not share access to the server our your user account!** You're advised to also use ssh public key authentication to secure your root and user account and disable password based authentication altogether. Also consider using a server dedicated to the purpose of fetching and storing your backups and do not run any other services aside from the backup script (!)
 
 ### Router: Create Backup User and Upload SSH Public Key
 
-Upload the ssh public key from the server to the router and assign it to a backup user
+Now upload the public key to the first router and assign it to the backup user. This will allow your server to log in as the backup user using its corresponding private key:
 
 ```
-server ~$ scp .ssh/id_rsa_rosbackup.pub admin@<routeripaddress>:
-[admin@MikroTik] > user add name=backup group=full
-[admin@MikroTik] > user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup
+server ~$ scp .ssh/id_rsa_rosbackup.pub admin@192.168.88.1:
+server ~$ ssh admin@192.168.88.1 "user add name=backup group=full password=\"$(openssl rand -base64 32)\""
+server ~$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
 ```
 
-Repeat the following steps for every router you'd like to back up using this script.
+**Hint:** RouterOS does not allow for disabling password authentication for users. That's for all services using the internal user database such as SSH, Telnet, WinBox as well as the RouterOS API. Creating a user without a password will allow anyone to log in as the backup user **without using a password** (!!) The second command uses openssl to generate a random alpha-numeric string to be used as the password for the backup user. This command has to be executed on the server as it uses command substitution which in this case is only supported on the linux shell (being bash by default).
+
+Repeat the above steps for every router that you'd like to back up by replacing the sample ip address with the actual ip address of the target router(s). Of course all ip addresses or hostnames (when using dynamic dns) have to be added to the ```ROUTERS[]``` array.
 
 ### Server: Script Installation
 
-You can now either clone the repository to your workstation and edit the configuration locally and then upload the script to the server.
-
-The way below describes how to clone the repository directly to the server (way described below).
+The easiest way to install the script is by downloading it directly to the server using wget and making it executable:
 
 ```
-server ~$ git clone https://github.com/jaydio/routeros-scripts
-server ~$ cd routeros-scripts/backup
-server ~$ cp rosbackup.sh /usr/local/sbin/
-server ~$ chmod 700 /usr/local/sbin/rosbackup.sh
+server ~$ wget https://raw.githubusercontent.com/jaydio/routeros-scripts/master/backup/rosbackup.sh
+server ~$ chmod 700 rosbackup.sh
 ```
-Now open the script `/usr/local/sbin/rosbackup.sh` and change the following variables/parameters:
+Now open the script ```rosbackup.sh``` e.g. using `nano rosbackup.sh` or `vim rosbackup.sh` and change the following variables to fit your needs. If you have followed this guide closely the defaults should get you started.
 
- * **SSHUSER** - The username to use when connecting to routers (same for all routers)
+ * `$SSHUSER` - Specify the username to be used when connecting to routers (defaults to ``backup``)
+ * `$BACKUPPATH_PARENT` - The parent directory under which to store backups. Within this path the script will create a directory per router based on its identity, ip address, ros version and architecture. Defaults to the current working directory (home directory).
+ * `$BACKUPPASSWORD` - The password to be used when securing binary backups created via ``/system backup save`` (extension ``.backup``). RouterOS by default secures binary backups with the actual password of the system user doing the backup. This variable overwrites the password for all backups done on all routers allowing it to be used for restoring abritary backups.
+
+After configuring your target routers you need to add them to the `ROUTERS[]` array so the script knows which routers to back up.
+
+#### Configuration Examples
+
+ * `$ROUTERS` - An array of ip addresses of all target routers that the script should back up. There's no artificial limit on how many routers you can backup.
+
+Adding three routers to be backed up using both; ip addresses and a fully qualified domain name (FQDN):
+
+```
+ROUTERS=()
+ROUTERS+=("192.168.200.1");
+ROUTERS+=("myrouter174.dyndns.org");
+ROUTERS+=("192.168.200.3");
+```
+
+Yet another example specifying a range of ip addresses as part of the same class C subnet (`192.168.200.1` to `192.168.200.254`):
+
+```
+ROUTERS=()
+ROUTERS+=($(seq -f "192.168.200.%g" 1 255));
+```
+
+The following 
+
  * **SSHARGS** - Arguments passed to the `ssh` command when connecting to routers. By default it expects the private key within the `~/.ssh` - the tilde resolves to the home folder of the user you've used to login. With root the path would look like this -> `/root/.ssh`
- * **BACKUPPATH_PARENT** - The parent path under which to store backups. Within this path the script will create a directory per router based on the name, ip address, ros version and architecture. Defaults to the curren working directory.
- * **ROUTERS** - An array of ip addresses of all target routers that the script should back up. There's no limit on how many routers you can add.
- * **BACKUPPASSWORD** - Specify the password required to restore backup files (.backup)
 
-Having one router configured now do a dry run by calling the script using its full path to make sure everything works.
+#### Fire!
+
+Having your routers all set up run the script by calling it directly from your home directory:
 
 ```
-~$ /usr/local/sbin/rosbackup.sh
+~$ ./rosbackup.sh
 >>>> Starting backup of MikroTik (192.168.200.1) running RouterOS version 6.29 (tile) ..
 Configuration backup saved
-DCUPLNK01.RT-10.99.238.1-ros6.29-tile-0602150124.backup    100%   99KB  98.9KB/s   00:00    
-DCUPLNK01.RT-10.99.238.1-ros6.29-tile-0602150124.rsc       100%   67KB  67.2KB/s   00:00  
+ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup    100%   99KB  98.9KB/s   00:00    
+ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc       100%   67KB  67.2KB/s   00:00  
 ```
 
 That's it!

@@ -18,7 +18,7 @@
 ###
 
 # export user to use when establishing ssh connections
-export SSHUSER="admin"
+export SSHUSER="backup"
 
 # define connection parameters such as the path to a private key
 export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
@@ -36,8 +36,8 @@ export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
 #export BACKUPPATH_PARENT="/mnt/backups/ros"
 export BACKUPPATH_PARENT="."
 
-# Specify the password used for restoring backup files (.backup)                
-BACKUPPASSWORD="FIXMEFOOBAR"
+# Specify the password required for restoring backup files (.backup)                
+export BACKUPPASSWORD="FIXMEFOOBAR"
 
 # an array of router ip addresses, extend as needed
 ROUTERS=()
@@ -46,7 +46,7 @@ ROUTERS+=("192.168.200.1");
 #ROUTERS+=("192.168.200.3");
 
 # or a range of addresses
-#ROUTERS+=($(seq -f "192.168.200.%g" 1 255));
+#ROUTERS+=($(seq -f "192.168.200.%g" 1 254));
 
 # functions
 function sanitizeRosOutput() {
