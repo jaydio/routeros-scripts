@@ -24,5 +24,5 @@ where  interfaces.host_id = hosts.id
 and    dns.domain_id = domains.id
 and    hosts.primary_dns_id = dns.id
 and    subnets.id = interfaces.subnet_id
-and    subnets.name NOT IN ('FUOLDLAN')
+and    subnets.name NOT IN ('EXCLUDEDSUBNET')
 order by interfaces.ip_addr
