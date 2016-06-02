@@ -16,7 +16,8 @@ Most scripts are the result of our work at [Foundation University](http://founda
 
 In case you're interested to know more about the university's operation:
 
-* [Implementing a Campus Backbone using MikroTik's Cloud Core Series](https://www.youtube.com/watch?v=qWTWpUbavuU).
+* [Dec 2014 - Implementing a Campus Backbone using MikroTik's Cloud Core Series](https://www.youtube.com/watch?v=qWTWpUbavuU).
+* [Apr 2016 - Implementing a Campus Backbone using MikroTik's Cloud Core Series (Part II) ](https://www.youtube.com/watch?v=jYQ0qzWu08w#t=3m19s).
 
 This presentation took place in December 2014 in Manila as part of the first [MikroTik User Meeting in the Philippines](http://mum.mikrotik.com/2014/PH/info).
 
