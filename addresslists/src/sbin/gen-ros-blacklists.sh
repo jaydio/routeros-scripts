@@ -47,7 +47,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.0\t/ { print "add list=blacklist address=" $1 "/24 comment=DShield";}' >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "${LIST_WGET}" | awk --posix '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.0\t/ { print "add list=blacklist address=" $1 "/24 timeout=\"1w 00:00:00\" comment=DShield";}' >> ${DEST_DIR}/${LISTNAME}.rsc;
     else
       errNotify
   fi;
@@ -73,7 +73,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=blacklist address=" $1 " comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=blacklist address=" $1 " timeout=\"1w 00:00:00\" comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -101,7 +101,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=blacklist address=" $1 " comment=OpenBL";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=blacklist address=" $1 " timeout=\"1w 00:00:00\" comment=OpenBL";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -124,7 +124,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=bogons-v4";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " timeout=\"1w 00:00:00\" comment=bogons-v4";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -150,7 +150,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " comment=bogons-v4-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=bogons address=" $1 " timeout=\"1w 00:00:00\" comment=bogons-v4-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -176,7 +176,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ipv6 firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {print "add list=bogons address=" $1 " comment=bogons-v6-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {print "add list=bogons address=" $1 " timeout=\"1w 00:00:00\" comment=bogons-v6-full";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -205,7 +205,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=zeus-badips address=" $1 " comment=zeus-badips";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=zeus-badips address=" $1 " timeout=\"1w 00:00:00\" comment=zeus-badips";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -226,7 +226,7 @@ if [ -d ${DEST_DIR} ] ; then
       echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=tornodes address=" $1 " comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=tornodes address=" $1 " timeout=\"1w 00:00:00\" comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc
   else
       errNotify
   fi;

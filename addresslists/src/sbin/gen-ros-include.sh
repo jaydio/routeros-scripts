@@ -24,7 +24,7 @@ export LOCKFILE="/var/lock/subsys/$(basename $0)_run";
 export WEBLOGFILE="${DEST_DIR}/update.log";
 export LASTSYNCFILE="${DEST_DIR}/timestamp.txt";
 export DATE_CUR_UTC=$(date -u);
-export WGET_ARGS_EXTRA="--max-redirect 0 --timeout=10 --dns-timeout=5 --connect-timeout=5"
+export WGET_ARGS_EXTRA="--max-redirect 0 --timeout=10 --tries=1"
 
 trap errNotify ERR;
 trap scriptExit EXIT;

@@ -4,6 +4,18 @@ In larger deployments it can be time saving to synchronize address lists across 
 
 The following approach uses a central web server being firewall friendly. Furthermore it can provide for extra security using basic authentication via SSL/TLS.
 
+## Dynamic Address List entries (Blacklists only)
+
+To reduce the amount of write cycles made to the flash memory (NAND) all address list entries of blacklists are stored in memory. By default the **timeout** value for blacklist entries is set to **one week**. This ensures that whenever the list server is unreachable (for whatever reason) that the last set of blacklist entries will remain in place for at least one week providing basic protection.
+
+However, due to their volatile nature, blacklist entries will not **survive a reboot**. Make sure to **execute the fetch and replace scripts after a reboot**. Alternatively you may of course create respective scheduler entries to automate this task upon reboot. As of April 2017 such entries are not included in this collection as there are situations were it might not be desirable to kick off an import upon boot.
+
+Kudos to Dmitry <amokk42@gmail.com> and Dave Joyce from Intrus Technologies for the inspiration.
+
+References:
+
+ * https://forum.mikrotik.com/viewtopic.php?f=9&t=98804
+
 ## Address List Categories
 
  * Public blacklists (PE, provider edge)
