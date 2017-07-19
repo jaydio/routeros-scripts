@@ -21,8 +21,8 @@
 export SSHUSER="backup"
 
 # define connection parameters such as the path to a private key
-export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
-                -F /dev/null \
+export SSHARGS="-F /dev/null \
+				-oIdentityFile=~/.ssh/id_rsa_rosbackup \
                 -oConnectTimeout=10 \
                 -oBatchMode=yes \
                 -oControlMaster=auto \
