@@ -95,7 +95,7 @@ Lets begin by creating a separate system user and generating an RSA keypair:
 [root@server ~]# useradd rosbackup
 [root@server ~]# su - rosbackup
 [rosbackup@server ~]$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
-[rosbackup@server ~]$ ssh-keygen -t RSA -b 4096 -N '' -C "rosbackup@${hostname -f}" -f .ssh/id_rsa_rosbackup
+[rosbackup@server ~]$ ssh-keygen -t RSA -b 4096 -N '' -C "rosbackup@$(hostname -f)" -f .ssh/id_rsa_rosbackup
 Your identification has been saved in .ssh/id_rsa_rosbackup.
 Your public key has been saved in .ssh/id_rsa_rosbackup.pub.
 The key fingerprint is:
