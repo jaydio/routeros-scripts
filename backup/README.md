@@ -122,7 +122,7 @@ rosbackup@server ~$ ssh admin@192.168.88.1 "user add name=backup group=full pass
 rosbackup@server ~$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
 ```
 
-**Hint:** RouterOS does not allow for disabling password authentication for users. That's for all services using the internal user database such as SSH, Telnet, WinBox as well as the RouterOS API. Creating a user without a password will allow anyone to log in as the backup user **without using a password** (!!) The second command uses openssl to generate a random alpha-numeric string to be used as the password for the backup user. This command has to be executed on the server as it uses command substitution which in this case is only supported on the linux shell (being bash by default).
+**Hint:** RouterOS seems to automatically disable interactive authentication via password for users that have a public key installed. Creating a user without a password and public key will allow anyone to log in as the backup user **using an empty string as the password** (!!) The second command uses openssl to generate a random alpha-numeric string to be used as the password for the backup user. This command has to be executed on the server as it uses command substitution which in this case is only supported on the linux shell (being bash by default).
 
 Repeat the above steps for every router that you'd like to back up by replacing the sample ip address with the actual ip address of the target router(s). Of course all ip addresses or hostnames (when using dynamic dns) have to be added to the ```ROUTERS[]``` array.
 
