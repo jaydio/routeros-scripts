@@ -54,7 +54,7 @@ For session multiplexing to work no special configuration is required. The defau
 
 ## Backup Directory Layout
 
-The script automatically creates a separate backup directory for each router being backed up. 
+The script automatically creates a separate backup directory for each router being backed up.
 
 The following information is encoded within the directory and filenames:
 
@@ -67,7 +67,7 @@ The location where backups are being stored is defined within  ```$BACKUPPATH_PA
 Sample directory structure:
 
 ```
-$ tree
+[rosbackup@server ~]$ tree
 .
 ├── ROUTERNAME-192.168.200.1-ros6.29-tile
 │   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup
@@ -92,10 +92,10 @@ Once you've logged in to your user account the next step is to generate an RSA k
 Lets begin by creating a separate system user and generating an RSA keypair:
 
 ```
-root@server ~$ useradd rosbackup
-root@server ~$ su - rosbackup
-rosbackup@server ~$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
-rosbackup@server ~$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
+[root@server ~]# useradd rosbackup
+[root@server ~]# su - rosbackup
+[rosbackup@server ~]$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
+[rosbackup@server ~]$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
 Generating public/private RSA key pair.
 Enter passphrase (empty for no passphrase): <PRESS ENTER>
 Enter same passphrase again: <PRESS ENTER>
@@ -117,9 +117,9 @@ As you seen above the keypair basically consists of two parts:
 Now upload the public key to the first router and assign it to the backup user. This will allow your server to log in as the backup user using its corresponding private key:
 
 ```
-rosbackup@server ~$ scp .ssh/id_rsa_rosbackup.pub admin@192.168.88.1:
-rosbackup@server ~$ ssh admin@192.168.88.1 "user add name=backup group=full password=\"$(openssl rand -base64 32)\""
-rosbackup@server ~$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
+[rosbackup@server ~]$ scp .ssh/id_rsa_rosbackup.pub admin@192.168.88.1:
+[rosbackup@server ~]$ ssh admin@192.168.88.1 "user add name=backup group=full password=\"$(openssl rand -base64 32)\""
+[rosbackup@server ~]$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
 ```
 
 **Hint:** RouterOS seems to automatically disable interactive authentication via password for users that have a public key installed. Creating a user without a password and public key will allow anyone to log in as the backup user **using an empty string as the password** (!!) The second command uses openssl to generate a random alpha-numeric string to be used as the password for the backup user. This command has to be executed on the server as it uses command substitution which in this case is only supported on the linux shell (being bash by default).
@@ -131,8 +131,8 @@ Repeat the above steps for every router that you'd like to back up by replacing 
 The easiest way to install the script is by downloading it directly to the server using wget and making it executable:
 
 ```
-rosbackup@server ~$ wget https://raw.githubusercontent.com/jaydio/routeros-scripts/master/backup/rosbackup.sh
-rosbackup@server ~$ chmod 700 rosbackup.sh
+[rosbackup@server ~]$ wget https://raw.githubusercontent.com/jaydio/routeros-scripts/master/backup/rosbackup.sh
+[rosbackup@server ~]$ chmod 700 rosbackup.sh
 ```
 Now open the script ```rosbackup.sh``` e.g. using `nano rosbackup.sh` or `vim rosbackup.sh` and change the following variables to fit your needs. If you have followed this guide closely the defaults should get you started.
 
@@ -162,7 +162,7 @@ ROUTERS=()
 ROUTERS+=($(seq -f "192.168.200.%g" 1 255));
 ```
 
-The following 
+The following
 
  * **SSHARGS** - Arguments passed to the `ssh` command when connecting to routers. By default it expects the private key within the `~/.ssh` - the tilde resolves to the home folder of the user you've used to login. With root the path would look like this -> `/root/.ssh`
 
@@ -171,11 +171,11 @@ The following
 Having added your target router(s) to the configuration you may now run the script by calling it directly from your home directory:
 
 ```
-rosbackup@server ~$ ./rosbackup.sh
+[rosbackup@server ~]$ ./rosbackup.sh
 >>>> Starting backup of MikroTik (192.168.200.1) running RouterOS version 6.29 (tile) ..
 Configuration backup saved
-ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup    100%   99KB  98.9KB/s   00:00    
-ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc       100%   67KB  67.2KB/s   00:00  
+ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup    100%   99KB  98.9KB/s   00:00
+ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc       100%   67KB  67.2KB/s   00:00
 ```
 
 That's it!
