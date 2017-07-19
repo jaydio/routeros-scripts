@@ -27,8 +27,7 @@ export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
                 -oBatchMode=yes \
                 -oControlMaster=auto \
                 -oControlPersist=1h \
-                -oControlPath=~/.ssh/ssh-rosbackup-%r-%h-%p                     
-                -oPubkeyAcceptedKeyTypes=+ssh-dss
+                -oControlPath=~/.ssh/ssh-rosbackup-%r-%h-%p
                 -oControlPath=~/.ssh/ssh-%r-%h-%p"
 
 # define the parent path for backups (defaults to user's home directory)
@@ -36,7 +35,7 @@ export SSHARGS="-i ~/.ssh/id_rsa_rosbackup \
 #export BACKUPPATH_PARENT="/mnt/backups/ros"
 export BACKUPPATH_PARENT="."
 
-# Specify the password required for restoring backup files (.backup)                
+# Specify the password required for restoring backup files (.backup)
 export BACKUPPASSWORD="FIXMEFOOBAR"
 
 # an array of router ip addresses, extend as needed
@@ -60,11 +59,11 @@ for ROUTERADDRESS in ${ROUTERS[@]}; do
     # check if we can authenticate with the remote host trying to execute a command, if not continue with next host
     echo "Trying ${ROUTERADDRESS} ... "
     ssh -q ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" > /dev/null || continue
-    
+
 	# generate an individual timestamp per router
 	TIMESTAMP="$(date +%m%d%y%H%M)";
 
-	# fetch the router's identity 
+	# fetch the router's identity
 	ROUTERNAME="$(ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" | sanitizeRosOutput)";
 
 	# fetch RouterOS version

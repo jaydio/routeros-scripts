@@ -89,11 +89,13 @@ First you'll have to log in to your linux server.
 Once you've logged in to your user account the next step is to generate an RSA keypair. It will be used by the backup script to log into target routers without the need for a password. This method is also being referred to as **non-interactive** or **public key authentication**.
 
 
-Lets begin by generating the RSA keypair for SSH:
+Lets begin by creating a separate system user and generating an RSA keypair:
 
 ```
-server ~$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
-server ~$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
+root@server ~$ useradd rosbackup
+root@server ~$ su - rosbackup
+rosbackup@server ~$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
+rosbackup@server ~$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
 Generating public/private RSA key pair.
 Enter passphrase (empty for no passphrase): <PRESS ENTER>
 Enter same passphrase again: <PRESS ENTER>
@@ -115,9 +117,9 @@ As you seen above the keypair basically consists of two parts:
 Now upload the public key to the first router and assign it to the backup user. This will allow your server to log in as the backup user using its corresponding private key:
 
 ```
-server ~$ scp .ssh/id_rsa_rosbackup.pub admin@192.168.88.1:
-server ~$ ssh admin@192.168.88.1 "user add name=backup group=full password=\"$(openssl rand -base64 32)\""
-server ~$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
+rosbackup@server ~$ scp .ssh/id_rsa_rosbackup.pub admin@192.168.88.1:
+rosbackup@server ~$ ssh admin@192.168.88.1 "user add name=backup group=full password=\"$(openssl rand -base64 32)\""
+rosbackup@server ~$ ssh admin@192.168.88.1 "user ssh-keys import public-key-file=id_rsa_rosbackup.pub user=backup"
 ```
 
 **Hint:** RouterOS does not allow for disabling password authentication for users. That's for all services using the internal user database such as SSH, Telnet, WinBox as well as the RouterOS API. Creating a user without a password will allow anyone to log in as the backup user **without using a password** (!!) The second command uses openssl to generate a random alpha-numeric string to be used as the password for the backup user. This command has to be executed on the server as it uses command substitution which in this case is only supported on the linux shell (being bash by default).
@@ -129,8 +131,8 @@ Repeat the above steps for every router that you'd like to back up by replacing 
 The easiest way to install the script is by downloading it directly to the server using wget and making it executable:
 
 ```
-server ~$ wget https://raw.githubusercontent.com/jaydio/routeros-scripts/master/backup/rosbackup.sh
-server ~$ chmod 700 rosbackup.sh
+rosbackup@server ~$ wget https://raw.githubusercontent.com/jaydio/routeros-scripts/master/backup/rosbackup.sh
+rosbackup@server ~$ chmod 700 rosbackup.sh
 ```
 Now open the script ```rosbackup.sh``` e.g. using `nano rosbackup.sh` or `vim rosbackup.sh` and change the following variables to fit your needs. If you have followed this guide closely the defaults should get you started.
 
@@ -166,10 +168,10 @@ The following
 
 #### Fire!
 
-Having your routers all set up run the script by calling it directly from your home directory:
+Having added your target router(s) to the configuration you may now run the script by calling it directly from your home directory:
 
 ```
-~$ ./rosbackup.sh
+rosbackup@server ~$ ./rosbackup.sh
 >>>> Starting backup of MikroTik (192.168.200.1) running RouterOS version 6.29 (tile) ..
 Configuration backup saved
 ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup    100%   99KB  98.9KB/s   00:00    
