@@ -95,15 +95,15 @@ Lets begin by creating a separate system user and generating an RSA keypair:
 [root@server ~]# useradd rosbackup
 [root@server ~]# su - rosbackup
 [rosbackup@server ~]$ test -d .ssh || mkdir .ssh && chmod 0700 .ssh
-[rosbackup@server ~]$ ssh-keygen -t RSA -b 4096 -C "rosbackup" -f .ssh/id_rsa_rosbackup
-Generating public/private RSA key pair.
-Enter passphrase (empty for no passphrase): <PRESS ENTER>
-Enter same passphrase again: <PRESS ENTER>
+[rosbackup@server ~]$ ssh-keygen -t RSA -b 4096 -N '' -C "rosbackup@${hostname -f}" -f .ssh/id_rsa_rosbackup
 Your identification has been saved in .ssh/id_rsa_rosbackup.
 Your public key has been saved in .ssh/id_rsa_rosbackup.pub.
+The key fingerprint is:
+04:fb:3e:9b:d4:9d:e0:6e:15:6b:cd:xx:xx:xx:xx:xx rosbackup@myserver
+
 ```
 
-When prompted for the passphrase hit enter to use an **empty passphrase**. This way the private key can be used by the backup script without the need for entering a passphrase or configuring an SSH agent.
+The private key is generated without a passphrase which means it can be used by the backup script without the need for entering a passphrase or configuring an SSH agent.
 
 As you seen above the keypair basically consists of two parts:
 
