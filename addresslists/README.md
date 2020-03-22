@@ -111,7 +111,7 @@ In the following example we'll install the dshield blacklist. Unlike other lists
 
 ```
 $ scp 04-installBlacklistDshield.rsc admin@192.168.88.1:
-$ ssh admin@192.168.88.1 "import 04-installBlacklistDshield.rsc"
+$ ssh admin@192.168.88.1 "import 030-installBlacklistDshield.rsc"
 [...]
 ```
 
