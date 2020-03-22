@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # gen-ros-blacklists.sh - generate black list files for direct import
-# Copyright (C) 2015 - Jan Dennis Bungart <me@jayd.io>
+# Copyright (C) 2015-2020 - Dennis J. "JD" Bungart <jd@route1.ph>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,34 +74,6 @@ if [ -d ${DEST_DIR} ] ; then
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\// { print "add list=blacklist address=" $1 " timeout=\"1w 00:00:00\" comment=SpamHaus";}' >> ${DEST_DIR}/${LISTNAME}.rsc
-    else
-      errNotify
-  fi;
-
-##### BLACKLIST: openbl
-  
-  export LISTNAME="openbl"
-  LIST_WGET="$(wget ${WGET_ARGS_EXTRA} -q -O - http://www.openbl.org/lists/base_30days.txt.gz | gunzip -c)"
-  if [ -n "${LIST_WGET}" ]
-    then
-      test -f ${DEST_DIR}/${LISTNAME}.rsc && rm ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      insertAuthorDetails
-      echo "# Address details courtesy of https://www.openbl.org/" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# (c) OpenBL - Abuse Reporting and Blacklisting" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# The OpenBL.org project (formerly known as the SSH blacklist)" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# is about detecting, logging and reporting various types of" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# internet abuse. Currently our hosts monitor ports 21 (FTP)," >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# 22 (SSH), 23 (TELNET), 25 (SMTP), 110 (POP3), 143 (IMAP)," >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# 587 (Submission), 993 (IMAPS) and 995 (POP3S) for" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# bruteforce login attacks as well as scans on ports 80 (HTTP)" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# and 443 (HTTPS) for vulnerable installations of phpMyAdmin" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# and other web applications." >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      insertListDetails
-      echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=blacklist address=" $1 " timeout=\"1w 00:00:00\" comment=OpenBL";}' >> ${DEST_DIR}/${LISTNAME}.rsc
     else
       errNotify
   fi;
@@ -181,38 +153,9 @@ if [ -d ${DEST_DIR} ] ; then
       errNotify
   fi;
 
-##### BLACKLIST: zeus-badips
+##### BLACKLIST: tornodes-v4
   
-  export LISTNAME="zeus-badips"
-  LIST_WGET="$(wget ${WGET_ARGS_EXTRA} -q -O - 'https://zeustracker.abuse.ch/blocklist.php?download=badips')"
-  if [ -n "${LIST_WGET}" ]
-    then
-      test -f ${DEST_DIR}/${LISTNAME}.rsc && rm ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      insertAuthorDetails
-      echo "# Address details courtesy" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# https://zeustracker.abuse.ch/blocklist.php" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# (c) abuse.ch - ZeuS Tracker" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# This blocklists only includes IPv4 addresses that" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# are used by the ZeuS trojan. It is the recommened" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# blocklist if you want to block only ZeuS IPs." >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# It excludes IP addresses that ZeuS Tracker believes" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# to be hijacked (level 2) or belong to a free web hosting" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# provider (level 3). Hence the false postive rate" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# should be much lower compared to the standard" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# ZeuS IP blocklist (see below)." >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      insertListDetails
-      echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
-      echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=zeus-badips address=" $1 " timeout=\"1w 00:00:00\" comment=zeus-badips";}' >> ${DEST_DIR}/${LISTNAME}.rsc
-    else
-      errNotify
-  fi;
-
-##### BLACKLIST: tornodes
-  
-  export LISTNAME="tornodes"
+  export LISTNAME="tornodes-v4"
   LIST_WGET="$(wget ${WGET_ARGS_EXTRA} -q -O - https://www.dan.me.uk/torlist/)"
   if [ -n "${LIST_WGET}" ]
     then
@@ -227,6 +170,27 @@ if [ -d ${DEST_DIR} ] ; then
       insertListDetails
       echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
       echo "${LIST_WGET}" | awk --posix '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ { print "add list=tornodes address=" $1 " timeout=\"1w 00:00:00\" comment=tornodes";}' >> ${DEST_DIR}/${LISTNAME}.rsc
+  else
+      errNotify
+  fi;
+
+##### BLACKLIST: tornodes-v6
+  
+  export LISTNAME="tornodes-v6"
+  LIST_WGET="$(wget ${WGET_ARGS_EXTRA} -q -O - https://www.dan.me.uk/torlist/)"
+  if [ -n "${LIST_WGET}" ]
+    then
+      test -f ${DEST_DIR}/${LISTNAME}.rsc && rm ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      insertAuthorDetails
+      echo "# Courtesy of (c) Daniel Austin MBCS" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# https://www.dan.me.uk/tornodes" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# Contains a list of all nodes in the TOR network" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "# -------------------------------------------------------" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      insertListDetails
+      echo "/ip firewall address-list" >> ${DEST_DIR}/${LISTNAME}.rsc;
+      echo "${LIST_WGET}" | awk --posix '/(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {print "add list=bogons address=" $1 " timeout=\"1w 00:00:00\" comment=tornodes-v6";}' >> ${DEST_DIR}/${LISTNAME}.rsc
   else
       errNotify
   fi;

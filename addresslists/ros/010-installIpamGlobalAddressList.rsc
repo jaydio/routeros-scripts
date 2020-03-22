@@ -1,5 +1,5 @@
 ###
-# Copyright (C) 2015 - Jan Dennis Bungart <me@jayd.io>
+# Copyright (C) 2015-2020 - Dennis J. "JD" Bungart <jd@route1.ph>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

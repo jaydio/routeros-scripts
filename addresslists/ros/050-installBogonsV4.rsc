@@ -1,5 +1,5 @@
 ###
-# Copyright (C) 2015 - Jan Dennis Bungart <me@jayd.io>
+# Copyright (C) 2015-2020 - Dennis J. "JD" Bungart <jd@route1.ph>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###
 
-/system script add name="FetchBlacklistDshield" source={
+/system script add name="FetchBogonsV4" source={
 
 # Make global variables available within the local scope
 :global AddressListsWebRemotePassword
@@ -24,21 +24,21 @@
 
 :if (:typeof[$AddressListsWebRemoteUser] = "nil") do={
     # If no username was defined assume that authentication isn't required
-    /tool fetch url="https://$AddressListsWebRemoteHost/dshield.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteHost/bogons-v4.rsc" mode=https;
     } else={
     # If a username was set assume authentication is mandatory and also use a password
-    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/dshield.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/bogons-v4.rsc" mode=https;
 }
 
 }
 
-/system script add name="ReplaceBlacklistDshield" source={
+/system script add name="ReplaceBogonsV4" source={
 
 # Declare list name including its extension (has to be .rsc)
-:local listName "dshield.rsc";
+:local listName "bogons-v4.rsc";
 
 # Declare comment used to identify all existing entries of this list
-:local listComment "DShield";
+:local listComment "bogons-v4";
 
 # Check if the list file is present
 :if ([:len [/file find name="$listName"]] > 0) do={
@@ -79,12 +79,12 @@
 }
 
 # Create scheduler entries
-/system scheduler add interval=1d name="FetchBlacklistDshield" on-event="/system script run FetchBlacklistDshield" start-date=jan/01/1970 start-time=01:44:00
-/system scheduler add interval=1d name="ReplaceBlacklistDshield" on-event="/system script run ReplaceBlacklistDshield" start-date=jan/01/1970 start-time=01:54:00
+/system scheduler add interval=1d name="FetchBogonsV4" on-event="/system script run FetchBogonsV4" start-date=jan/01/1970 start-time=01:45:00
+/system scheduler add interval=1d name="ReplaceBogonsV4" on-event="/system script run ReplaceBogonsV4" start-date=jan/01/1970 start-time=01:55:00
 
 # Fetch and install address list
 :put ">>> Fetching list ..."
-/system script run FetchBlacklistDshield;
+/system script run FetchBogonsV4;
 :delay 5;
 :put ">>> Installing entries ..."
-/system script run ReplaceBlacklistDshield;
+/system script run ReplaceBogonsV4;

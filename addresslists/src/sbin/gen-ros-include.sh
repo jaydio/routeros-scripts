@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # gen-ros-include.sh.sh - functional include file for address list generation
-# Copyright (C) 2015 - Jan Dennis Bungart <me@jayd.io>
+# Copyright (C) 2015-2020 - Dennis J. "JD" Bungart <jd@route1.ph>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -103,6 +103,8 @@ scriptLog "Automated removal of lock file"
 scriptLog "Placing timestamp"
 echo -e "Last synchronization: \n\n$(date) \n$(date -u)" > ${LASTSYNCFILE}
 
+restoreAccess
+scriptLog "Restoring repository access"
 
 scriptLog "---- $(date -u) - $(basename $0) ----"
 }
