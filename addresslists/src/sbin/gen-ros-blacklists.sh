@@ -177,7 +177,6 @@ if [ -d ${DEST_DIR} ] ; then
 ##### BLACKLIST: tornodes-v6
   
   export LISTNAME="tornodes-v6"
-  LIST_WGET="$(wget ${WGET_ARGS_EXTRA} -q -O - https://www.dan.me.uk/torlist/)"
   if [ -n "${LIST_WGET}" ]
     then
       test -f ${DEST_DIR}/${LISTNAME}.rsc && rm ${DEST_DIR}/${LISTNAME}.rsc;
