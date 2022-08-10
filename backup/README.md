@@ -6,25 +6,31 @@ Features:
  * Automatically creates an encoded backup directory for each router
  * Stores both; a full export and an architecture specific binary backup
  * Utilizes SSH session multiplexing for optimized performance
+ * Basic error handling/reporting e.g. skips device when unreachable (timeout based)
+ * Automatic version detection for RouterOS version 6 and 7
 
 Missing features:
 
+ * Implement logic to export certificates from certificate store
  * Implement basic logging functionality
- * Add error handling/reporting e.g. skip iteration if router isn't reachable, providing a detailed error output
- * Add cross-platform support for email notifications using linux board utilities (sendmail compat)
- * Integrate functionality to remove backups older than a given count of days (find)
+ * Better error handling/reporting with detailed error output
+ * Add cross-platform support for notifications via email, slack/mattermost webhooks, telegram, email [...]
+ * Functionality to remove backups older than a given count of days/weeks/months via ```find```
+
+## Important Notes
+
+ * This script does NOT export certificates (check ```/certificate/print```)
+ * Wireguard keys under ROS7 are exported as well :)
 
 ## OS Compatibility
 
-The script was tested successfully on the following distros:
+The script should work on the following GNU/Linux distributions:
 
- * CentOS 6
  * CentOS 7
- * Fedora 21
- * Fedora 22
- * Fedora 23
+ * CentOS 8
+ * Fedora 35+
 
-The script should work fine on other platforms as well including Debian and its derivates (such as Ubuntu).
+The script should work fine on other platforms including Debian and its derivatives (such as Ubuntu).
 
 ## OpenSSH release 7.0 disables support for DSS based Host and User Keys by default (August 2015)
 
@@ -70,9 +76,9 @@ Sample directory structure:
 [rosbackup@server ~]$ tree
 .
 ├── ROUTERNAME-192.168.200.1-ros6.29-tile
-│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup
-│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.INFO.txt
-│   └── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc
+│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.backup
+│   ├── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.INFO.txt
+│   └── ROUTERNAME-192.168.200.1-ros6.29-tile-0602160124.rsc
 └── rosbackup.sh
 ```
 
