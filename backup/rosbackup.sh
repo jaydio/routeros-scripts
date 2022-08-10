@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # rosbackup.sh - simple back up of multiple RouterOS instances via SSH
-# Copyright (C) 2015-2020 - Dennis J. "JD" Bungart <jd@route1.ph>
+# Copyright (C) 2015-2022 - Dennis J. "JD" Bungart <jd@route1.ph>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,13 +22,12 @@ export SSHUSER="backup"
 
 # define connection parameters such as the path to a private key
 export SSHARGS="-F /dev/null \
-				-oIdentityFile=~/.ssh/id_rsa_rosbackup \
-                -oConnectTimeout=10 \
+		-oIdentityFile=~/.ssh/id_rsa_rosbackup \
+                -oConnectTimeout=10s \
                 -oBatchMode=yes \
                 -oControlMaster=auto \
-                -oControlPersist=1h \
-                -oControlPath=~/.ssh/ssh-rosbackup-%r-%h-%p
-                -oControlPath=~/.ssh/ssh-%r-%h-%p"
+                -oControlPersist=1m \
+                -oControlPath=~/.ssh/ssh-rosbackup-%r-%h-%p"
 
 # define the parent path for backups (defaults to user's home directory)
 # hint: omit the trailing slash
@@ -40,9 +39,8 @@ export BACKUPPASSWORD="FIXMEFOOBAR"
 
 # an array of router ip addresses, extend as needed
 ROUTERS=()
-ROUTERS+=("192.168.200.1");
-#ROUTERS+=("192.168.200.2");
-#ROUTERS+=("192.168.200.3");
+ROUTERS+=("192.168.88.1");
+#ROUTERS+=("192.168.88.2");
 
 # or a range of addresses
 #ROUTERS+=($(seq -f "192.168.200.%g" 1 254));
@@ -56,53 +54,63 @@ awk 'NR>1{$1=$1}{ print $2 }' | sed 's/\r$//'
 # iteration
 for ROUTERADDRESS in ${ROUTERS[@]}; do
 
-    # check if we can authenticate with the remote host trying to execute a command, if not continue with next host
-    echo "Trying ${ROUTERADDRESS} ... "
-    ssh -q ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" > /dev/null || continue
-
+	# check if we can authenticate with the remote host trying to execute a command, if not continue with next host
+	echo "Trying ${ROUTERADDRESS} ... "
+	ssh -q ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" > /dev/null || continue
+	
 	# generate an individual timestamp per router
 	TIMESTAMP="$(date +%m%d%y%H%M)";
-
-	# fetch the router's identity
+	
+	# fetch the router's identity 
 	ROUTERNAME="$(ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" | sanitizeRosOutput)";
-
+	
 	# fetch RouterOS version
 	ROUTEROSVERSION="$(ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system resource print" | grep version | sanitizeRosOutput)";
-
+	ROUTEROSVERSION_MAJOR="$(cut -d '.' -f 1 <<< ${ROUTEROSVERSION})"
+	ROUTEROSVERSION_MINOR="$(cut -d '.' -f 2 <<< ${ROUTEROSVERSION})"
+	ROUTEROSVERSION_PATCH="$(cut -d '.' -f 3 <<< ${ROUTEROSVERSION})"
+	
 	# fetch the board's architecture
 	ROUTERARCH="$(ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system resource print" | grep architecture-name | sanitizeRosOutput)";
-
+	
 	# define the backup name
 	BACKUPNAME="${ROUTERNAME}-${ROUTERADDRESS}-ros${ROUTEROSVERSION}-${ROUTERARCH}-${TIMESTAMP}";
-
+	
 	# define the local path for backups
 	BACKUPPATH="${BACKUPPATH_PARENT}/${ROUTERNAME}-${ROUTERADDRESS}-ros${ROUTEROSVERSION}-${ROUTERARCH}";
-
+	
 	# check if directory for router already exists, if not create one
 	test -d ${BACKUPPATH} || mkdir ${BACKUPPATH}
-
+	
 	# inform about which router is currently being backed up and provide some details
 	echo ">>>> Starting backup of ${ROUTERNAME} ($ROUTERADDRESS) running RouterOS version ${ROUTEROSVERSION} (${ROUTERARCH}) .."
-
+	
 	# save system information to local info file
 	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system identity print" >> ${BACKUPPATH}/${BACKUPNAME}.INFO.txt;
 	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system routerboard print" >> ${BACKUPPATH}/${BACKUPNAME}.INFO.txt;
 	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system resource print" >> ${BACKUPPATH}/${BACKUPNAME}.INFO.txt;
-
+	
 	# create a binary backup that can be used for immediate restore.
 	# restore only works on a similar rb model e.g. with the same architecture
 	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "system backup save name=\"${BACKUPNAME}\" password=\"${BACKUPPASSWORD}\"";
+	sleep 2;
+
 	scp ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS}:${BACKUPNAME}.backup ${BACKUPPATH}/;
 	# give the flashrom a few seconds to breath
 	sleep 5;
-	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "file remove \"${BACKUPNAME}.backup\"";
 
+	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "file remove \"${BACKUPNAME}.backup\"";
+	
 	# create a script based backup for restore. this works on any router
 	# but might require slight adjustments of the script when changing platforms
-	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "export file=\"${BACKUPNAME}\"";
+	test ${ROUTEROSVERSION_MAJOR} -eq 6 && ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "export file=\"${BACKUPNAME}\"";
+	test ${ROUTEROSVERSION_MAJOR} -eq 7 && ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "export show-sensitive file=\"${BACKUPNAME}\"";
+        sleep 2;
+
 	scp ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS}:${BACKUPNAME}.rsc ${BACKUPPATH}/;
 	# give the flashrom a few seconds to breath
 	sleep 5;
+
 	ssh ${SSHARGS} ${SSHUSER}@${ROUTERADDRESS} "file remove \"${BACKUPNAME}.rsc\"";
 
 done

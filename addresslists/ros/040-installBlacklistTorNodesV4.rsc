@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###
 
-/system script add name="FetchBlacklistTorNodes" source={
+/system script add name="FetchBlacklistTorNodesV4" source={
 
 # Make global variables available within the local scope
 :global AddressListsWebRemotePassword
@@ -24,21 +24,21 @@
 
 :if (:typeof[$AddressListsWebRemoteUser] = "nil") do={
     # If no username was defined assume that authentication isn't required
-    /tool fetch url="https://$AddressListsWebRemoteHost/tornodes.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteHost/tornodes-v4.rsc" mode=https;
     } else={
     # If a username was set assume authentication is mandatory and also use a password
-    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/tornodes.rsc" mode=https;
+    /tool fetch url="https://$AddressListsWebRemoteUser:$AddressListsWebRemotePassword@$AddressListsWebRemoteHost/tornodes-v4.rsc" mode=https;
 }
 
 }
 
-/system script add name="ReplaceBlacklistTorNodes" source={
+/system script add name="ReplaceBlacklistTorNodesV4" source={
 
 # Declare list name including its extension (has to be .rsc)
-:local listName "tornodes.rsc";
+:local listName "tornodes-v4.rsc";
 
 # Declare comment used to identify all existing entries of this list
-:local listComment "tornodes";
+:local listComment "tornodes-v4";
 
 # Check if the list file is present
 :if ([:len [/file find name="$listName"]] > 0) do={
@@ -79,12 +79,12 @@
 }
 
 # Create scheduler entries
-/system scheduler add interval=1d name="FetchBlacklistTorNodes" on-event="/system script run FetchBlacklistTorNodes" start-date=jan/01/1970 start-time=01:45:00
-/system scheduler add interval=1d name="ReplaceBlacklistTorNodes" on-event="/system script run ReplaceBlacklistTorNodes" start-date=jan/01/1970 start-time=01:55:00
+/system scheduler add interval=1d name="FetchBlacklistTorNodesV4" on-event="/system script run FetchBlacklistTorNodesV4" start-date=jan/01/1970 start-time=01:45:00
+/system scheduler add interval=1d name="ReplaceBlacklistTorNodesV4" on-event="/system script run ReplaceBlacklistTorNodesV4" start-date=jan/01/1970 start-time=01:55:00
 
 # Fetch and install address list
 :put ">>> Fetching list ..."
-/system script run FetchBlacklistTorNodes;
+/system script run FetchBlacklistTorNodesV4;
 :delay 5;
 :put ">>> Installing entries ..."
-/system script run ReplaceBlacklistTorNodes;
+/system script run ReplaceBlacklistTorNodesV4;
